@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
-from openrouter_prices import diff, normalize, per_million, render  # noqa: E402
+from openrouter_prices import diff, needs_endpoint_lookup, normalize, per_million, render  # noqa: E402
 
 NOW = datetime(2026, 9, 25, 5, 0, tzinfo=timezone.utc)
 
@@ -48,16 +48,30 @@ def test_first_run_uses_created_window():
     assert [m["id"] for m in diff({}, cur, NOW)["new"]] == ["fresh"]
 
 
-def test_discount_and_expiry():
+def test_expiry_splits_free_offers_from_retired_models():
     cur = normalize(
         [
-            model("promo", discount=0.25, expires="2026-09-28T00:00:00Z"),
-            model("later", expires="2026-12-01"),
+            model("x/promo:free", prompt="0", completion="0", expires="2026-09-26"),
+            model("x/old", expires="2026-09-28T00:00:00Z"),
+            model("x/later", expires="2026-12-01"),
         ]
     )
     report = diff(cur, cur, NOW)
-    assert [m["id"] for m in report["discounted"]] == ["promo"]
-    assert [m["id"] for m in report["expiring"]] == ["promo"]
+    assert [m["id"] for m in report["free_ending"]] == ["x/promo:free"]
+    assert [m["id"] for m in report["retiring"]] == ["x/old"]
+    assert "not a discount" in render(report, 10)
+
+
+def test_endpoint_discount_overrides_model_level_zero():
+    cur = normalize([model("upstage/solar"), model("x/plain")], discounts={"upstage/solar": 0.5})
+    assert [(m["id"], m["discount"]) for m in diff(cur, cur, NOW)["discounted"]] == [("upstage/solar", 0.5)]
+
+
+def test_endpoint_lookup_skips_free_and_router_models():
+    snap = normalize(
+        [model("a/paid"), model("a/x:free", prompt="0", completion="0"), model("openrouter/auto", prompt="-1")]
+    )
+    assert [i for i, m in snap.items() if needs_endpoint_lookup(i, m)] == ["a/paid"]
 
 
 def test_discounts_sorted_high_to_low():
