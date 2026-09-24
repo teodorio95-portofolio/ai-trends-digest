@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Sources | GitHub Trending (daily), GitHub Search (new repos), Medium tag feeds |
+| Sources | GitHub Trending (daily + weekly), Medium tag feeds, WebSearch, OpenRouter model prices |
 | Focus | AI, AI agents, agent harnesses, skills, plugins, MCP, coding agents |
 | Schedule | 05:00 UTC daily (08:00 Bucharest in summer, 07:00 in winter) |
 | Delivery | `digests/YYYY-MM-DD.md` on branch `claude/digests` + ntfy push with a link |
@@ -23,6 +23,10 @@ flowchart LR
 
 - `digests/` — one Markdown file per day; the agent reads the previous ones to
   mark what is genuinely new.
+- `scripts/openrouter_prices.py` — stdlib-only; snapshots OpenRouter prices to
+  `data/openrouter-models.json` (on `claude/digests`) and prints price drops,
+  active discounts, new/free models and offers expiring within 7 days.
+- `tests/` — `uv run --no-project --with pytest pytest -q tests`.
 
 > ⚠️ The digest lives on the `claude/digests` branch, not `main`: cloud routines
 > push only to `claude/*` branches by default. The ntfy topic is in the routine
