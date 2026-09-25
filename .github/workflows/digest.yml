@@ -15,6 +15,10 @@ on:
         description: "Rebuild even if today's digest already exists"
         type: boolean
         default: false
+      resend_email:
+        description: "Only re-send today's email (no Claude run, no commit)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -40,17 +44,24 @@ jobs:
         id: date
         env:
           FORCE: ${{ inputs.force }}
+          RESEND: ${{ inputs.resend_email }}
         run: |
           today=$(date -u +%F)
           echo "today=$today" >> "$GITHUB_OUTPUT"
           echo "link=https://github.com/$GITHUB_REPOSITORY/blob/digests/digests/$today.md" >> "$GITHUB_OUTPUT"
-          if [ -f "out/digests/$today.md" ] && [ "$FORCE" != "true" ]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
+          if [ "$RESEND" = "true" ]; then
+            test -f "out/digests/$today.md" || { echo "::error::no digest for $today to re-send"; exit 1; }
+            echo "send=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::re-sending the email only"
+          elif [ -f "out/digests/$today.md" ] && [ "$FORCE" != "true" ]; then
             echo "::notice::digest for $today already exists, nothing to do"
+          else
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            echo "send=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: OpenRouter prices
-        if: steps.date.outputs.skip != 'true'
+        if: steps.date.outputs.build == 'true'
         run: |
           if ! python3 scripts/openrouter_prices.py --snapshot out/data/openrouter-models.json --limit 15 \
               > "$RUNNER_TEMP/openrouter.md" 2> "$RUNNER_TEMP/openrouter.err"; then
@@ -59,7 +70,7 @@ jobs:
           cat "$RUNNER_TEMP/openrouter.md"
 
       - name: Write digest with Claude Code
-        if: steps.date.outputs.skip != 'true'
+        if: steps.date.outputs.build == 'true'
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           TODAY: ${{ steps.date.outputs.today }}
@@ -75,7 +86,7 @@ jobs:
           test -s "out/digests/$TODAY.md" || { echo "::error::Claude did not write out/digests/$TODAY.md"; exit 1; }
 
       - name: Commit digest
-        if: steps.date.outputs.skip != 'true'
+        if: steps.date.outputs.build == 'true'
         working-directory: out
         env:
           TODAY: ${{ steps.date.outputs.today }}
@@ -87,15 +98,16 @@ jobs:
           git push origin HEAD:digests
 
       - name: Build email body
-        if: steps.date.outputs.skip != 'true'
+        if: steps.date.outputs.send == 'true'
         env:
           TODAY: ${{ steps.date.outputs.today }}
           LINK: ${{ steps.date.outputs.link }}
         run: |
-          { printf '**[Deschide pe GitHub](%s)**\n\n' "$LINK"; cat "out/digests/$TODAY.md"; } > "$RUNNER_TEMP/email.md"
+          python3 scripts/email_html.py "out/digests/$TODAY.md" "$LINK" > "$RUNNER_TEMP/email.html"
+          python3 scripts/email_html.py "out/digests/$TODAY.md" "$LINK" --text > "$RUNNER_TEMP/email.txt"
 
       - name: Email digest
-        if: steps.date.outputs.skip != 'true'
+        if: steps.date.outputs.send == 'true'
         uses: dawidd6/action-send-mail@v22
         with:
           server_address: smtp.gmail.com
@@ -106,12 +118,12 @@ jobs:
           subject: AI digest ${{ steps.date.outputs.today }}
           to: ${{ secrets.MAIL_USERNAME }}
           from: AI digest <${{ secrets.MAIL_USERNAME }}>
-          html_body: file://${{ runner.temp }}/email.md
-          convert_markdown: true
+          html_body: file://${{ runner.temp }}/email.html
+          body: file://${{ runner.temp }}/email.txt
 
       # ntfy.sh rate-limits per sending IP; a 429 must not fail the run.
       - name: Phone push (ntfy)
-        if: steps.date.outputs.skip != 'true'
+        if: steps.date.outputs.build == 'true'
         continue-on-error: true
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}

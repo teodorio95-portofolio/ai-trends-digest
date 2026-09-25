@@ -20,28 +20,28 @@ You run inside GitHub Actions with full network access. Your ONLY output is one 
 ## TL;DR
 (3 bullets: the most important things today)
 
-## 🆕 Nou: agents / harness / skills / plugins / MCP
-(max 8) - [owner/repo](url) — ⭐ <total> (+<today or 'nou'>) — ce este (1 propozitie). De ce conteaza pentru tine (1 propozitie).
+## Nou: agents / harness / skills / plugins / MCP
+(max 8) - [owner/repo](url) — <total> stele (+<today or 'nou'>) — ce este (1 propozitie). De ce conteaza pentru tine (1 propozitie).
 
-## 🔥 GitHub Trending (restul relevant pentru AI)
+## GitHub Trending (restul relevant pentru AI)
 (max 8, same format)
 
-## 📝 Medium
+## Medium
 (max 6) - [title](url) — <author> — rezumat in 1-2 propozitii
 
-## 💸 Reduceri si preturi modele (OpenRouter)
+## Reduceri si preturi modele (OpenRouter)
 (max 8, from step 2d only) - [<model name>](https://openrouter.ai/<model id>) — <-X% reducere | pret nou vs vechi | GRATUIT> — in/out $ per 1M tokens — <expira <date> if known>
 Priority: price drops and discounts on strong text/coding models (Anthropic, OpenAI, Google, DeepSeek, Qwen, Mistral, Meta, xAI, Z.ai, Moonshot, Kimi), then new free models useful for coding/agents. Skip image/audio/TTS-only models. Retired models go in one separate bullet, never as a discount.
 Last line: [Toate reducerile pe OpenRouter](https://openrouter.ai/models?order=discount-high-to-low)
 
-## 📰 Alte lansari
+## Alte lansari
 (max 4, from the WebSearch step, with source link and date)
 
-## 👀 De incercat
+## De incercat
 (max 2 concrete things Teodor could try locally, prefer free/local)
 
 ## Surse
 (which fetches worked, which failed and why, item counts)
 ```
 
-Every item needs a working link. Never invent star counts, prices, authors, or content. The first `## TL;DR` bullets are also used as the phone notification text, so keep each under 140 characters.
+Every item needs a working link. Never invent star counts, prices, authors, or content. Use no emoji or pictograms anywhere in the file. The first `## TL;DR` bullets are also used as the phone notification text, so keep each under 140 characters.
