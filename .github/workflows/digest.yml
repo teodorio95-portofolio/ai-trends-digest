@@ -1,0 +1,123 @@
+# Daily AI trends digest.
+#
+# No `schedule` trigger on purpose: GitHub treats scheduled runs as best effort
+# and drops them under load. gh-workflow-scheduler (Cloudflare Worker) calls
+# workflow_dispatch at 05:00 UTC instead.
+#
+# Claude Code only writes digests/<date>.md; commit, email and phone push are
+# plain steps here so they cannot be skipped or improvised.
+name: digest
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Rebuild even if today's digest already exists"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check out the digests branch
+        uses: actions/checkout@v7
+        with:
+          ref: digests
+          path: out
+
+      - name: Pick date
+        id: date
+        env:
+          FORCE: ${{ inputs.force }}
+        run: |
+          today=$(date -u +%F)
+          echo "today=$today" >> "$GITHUB_OUTPUT"
+          echo "link=https://github.com/$GITHUB_REPOSITORY/blob/digests/digests/$today.md" >> "$GITHUB_OUTPUT"
+          if [ -f "out/digests/$today.md" ] && [ "$FORCE" != "true" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::digest for $today already exists, nothing to do"
+          fi
+
+      - name: OpenRouter prices
+        if: steps.date.outputs.skip != 'true'
+        run: |
+          if ! python3 scripts/openrouter_prices.py --snapshot out/data/openrouter-models.json --limit 15 \
+              > "$RUNNER_TEMP/openrouter.md" 2> "$RUNNER_TEMP/openrouter.err"; then
+            echo "OpenRouter fetch failed: $(cat "$RUNNER_TEMP/openrouter.err")" > "$RUNNER_TEMP/openrouter.md"
+          fi
+          cat "$RUNNER_TEMP/openrouter.md"
+
+      - name: Write digest with Claude Code
+        if: steps.date.outputs.skip != 'true'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          TODAY: ${{ steps.date.outputs.today }}
+        run: |
+          npm install --global --no-fund --no-audit @anthropic-ai/claude-code@2.1.282
+          sed -e "s|{{TODAY}}|$TODAY|g" -e "s|{{OPENROUTER}}|$RUNNER_TEMP/openrouter.md|g" \
+            prompt/digest.md > "$RUNNER_TEMP/prompt.md"
+          claude -p "$(cat "$RUNNER_TEMP/prompt.md")" \
+            --allowedTools "Read,Write,Edit,Glob,Grep,WebFetch,WebSearch" \
+            --output-format text
+          test -s "out/digests/$TODAY.md" || { echo "::error::Claude did not write out/digests/$TODAY.md"; exit 1; }
+
+      - name: Commit digest
+        if: steps.date.outputs.skip != 'true'
+        working-directory: out
+        env:
+          TODAY: ${{ steps.date.outputs.today }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "digests/$TODAY.md" data/openrouter-models.json
+          git commit -m "digest: $TODAY"
+          git push origin HEAD:digests
+
+      - name: Build email body
+        if: steps.date.outputs.skip != 'true'
+        env:
+          TODAY: ${{ steps.date.outputs.today }}
+          LINK: ${{ steps.date.outputs.link }}
+        run: |
+          { printf '**[Deschide pe GitHub](%s)**\n\n' "$LINK"; cat "out/digests/$TODAY.md"; } > "$RUNNER_TEMP/email.md"
+
+      - name: Email digest
+        if: steps.date.outputs.skip != 'true'
+        uses: dawidd6/action-send-mail@v22
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: AI digest ${{ steps.date.outputs.today }}
+          to: ${{ secrets.MAIL_USERNAME }}
+          from: AI digest <${{ secrets.MAIL_USERNAME }}>
+          html_body: file://${{ runner.temp }}/email.md
+          convert_markdown: true
+
+      # ntfy.sh rate-limits per sending IP; a 429 must not fail the run.
+      - name: Phone push (ntfy)
+        if: steps.date.outputs.skip != 'true'
+        continue-on-error: true
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          TODAY: ${{ steps.date.outputs.today }}
+          LINK: ${{ steps.date.outputs.link }}
+        run: |
+          python3 scripts/ntfy_payload.py "out/digests/$TODAY.md" > "$RUNNER_TEMP/ntfy.json"
+          code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' \
+            --data-binary @"$RUNNER_TEMP/ntfy.json" https://ntfy.sh/)
+          echo "ntfy HTTP $code"
+          [ "$code" = "200" ]
