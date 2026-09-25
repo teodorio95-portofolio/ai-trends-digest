@@ -65,6 +65,8 @@ jobs:
           TODAY: ${{ steps.date.outputs.today }}
         run: |
           npm install --global --no-fund --no-audit @anthropic-ai/claude-code@2.1.282
+          # a token pasted from a wrapped terminal line carries a newline; the CLI rejects it
+          export CLAUDE_CODE_OAUTH_TOKEN="${CLAUDE_CODE_OAUTH_TOKEN//[$' \t\r\n']/}"
           sed -e "s|{{TODAY}}|$TODAY|g" -e "s|{{OPENROUTER}}|$RUNNER_TEMP/openrouter.md|g" \
             prompt/digest.md > "$RUNNER_TEMP/prompt.md"
           claude -p "$(cat "$RUNNER_TEMP/prompt.md")" \
