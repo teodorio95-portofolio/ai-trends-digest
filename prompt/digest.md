@@ -39,7 +39,7 @@ Last line: [Toate reducerile pe OpenRouter](https://openrouter.ai/models?order=d
 (from step 2e only) Three groups, in this order, each a bold line followed by bullets:
 **Cel mai bun coding index** (top 3), **Cel mai bun raport index/pret** (top 3), **Cele mai rapide dintre cele puternice** (top 2).
 - [<model name>](<url from the script>) — <creator> — Coding Index <X> — $<blended>/1M (in/out $) — <tok/s> tok/s <— nou in top, only if marked NEW>
-A model may appear in several groups. If the script says skipped or failed, write one line saying so and mention it under Surse.
+Only closed frontier models are listed, each model once per group (the script already filtered and deduplicated). A model may appear in several groups. If the script says skipped or failed, write one line saying so and mention it under Surse.
 Last line: Date: [Artificial Analysis](https://artificialanalysis.ai/) · [Coding Agent Index (cost per task)](https://artificialanalysis.ai/agents/coding-agents#coding-agents-index)
 
 ## Alte lansari

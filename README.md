@@ -48,8 +48,10 @@ Set each with `gh secret set <NAME> -R teodorio95-portofolio/ai-trends-digest`
 - `scripts/openrouter_prices.py` — stdlib-only; snapshots OpenRouter prices to
   `data/openrouter-models.json` and prints price drops, per-provider discounts,
   new/free models, ending free offers and retired models.
-- `scripts/aa_coding.py` — stdlib-only; ranks models from the Artificial
-  Analysis API by coding index, coding index per blended $, and output speed
+- `scripts/aa_coding.py` — stdlib-only; ranks closed frontier models
+  (Anthropic, OpenAI, Google, xAI, Meta; open families like gpt-oss, Gemma,
+  Llama dropped), one effort variant per model, from the Artificial Analysis
+  API by coding index, coding index per blended $, and output speed
   (the last two only among models within 80% of the best index); snapshot in
   `data/aa-coding.json` marks new entries.
 - `scripts/ntfy_payload.py` — TL;DR as the push text, a tap opens GitHub.

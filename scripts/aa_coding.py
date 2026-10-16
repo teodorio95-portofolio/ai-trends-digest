@@ -2,7 +2,9 @@
 
 Uses the free Artificial Analysis API (attribution to artificialanalysis.ai is
 required). The coding index is per model; prices are USD per 1M tokens, not
-per task: the coding-agents page (cost per task) has no API. Stdlib only.
+per task: the coding-agents page (cost per task) has no API. Only closed
+frontier models are ranked, each model family once (best effort variant).
+Stdlib only.
 """
 
 from __future__ import annotations
@@ -10,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.request
 from datetime import datetime, timezone
@@ -20,6 +23,10 @@ MODEL_URL = "https://artificialanalysis.ai/models/{slug}"
 KEY_ENV = "ARTIFICIAL_ANALYSIS_API_KEY"
 STRONG_RATIO = 0.8  # value/speed lists only consider models within 80% of the best coding index
 LISTS = ("top", "value", "fast")
+# The API has no open-weights/license field: frontier = closed labs, minus their open families.
+FRONTIER_CREATORS = {"anthropic", "openai", "google", "xai", "meta"}
+OPEN_FAMILIES = ("gpt-oss", "gemma", "llama")
+EFFORT_SUFFIX = re.compile(r"(\s*\([^)]*\))+\s*$")  # "Claude Fable 5.1 (Max, Default Fallback)"
 
 
 def fetch_models(api_key: str) -> list[dict]:
@@ -44,8 +51,10 @@ def normalize(models: list[dict]) -> dict[str, dict]:
         if coding is None:
             continue
         pricing = model.get("pricing") or {}
+        name = model.get("name", model["id"])
         snapshot[model["id"]] = {
-            "name": model.get("name", model["id"]),
+            "name": name,
+            "family": family(name),
             "creator": (model.get("model_creator") or {}).get("name", "?"),
             "slug": model.get("slug", ""),
             "coding": coding,
@@ -57,8 +66,32 @@ def normalize(models: list[dict]) -> dict[str, dict]:
     return snapshot
 
 
+def family(name: str) -> str:
+    """Model name without the effort/variant suffix, so each model shows up once per list."""
+    return EFFORT_SUFFIX.sub("", name).strip() or name
+
+
+def is_frontier(entry: dict) -> bool:
+    name = entry["name"].lower()
+    return entry["creator"].lower() in FRONTIER_CREATORS and not any(f in name for f in OPEN_FAMILIES)
+
+
+def frontier(models: dict[str, dict]) -> dict[str, dict]:
+    return {i: m for i, m in models.items() if is_frontier(m)}
+
+
 def value(entry: dict) -> float:
     return entry["coding"] / entry["price"]
+
+
+def _unique(ids: list[str], models: dict[str, dict], limit: int) -> list[str]:
+    """Keep the first (best) variant of each family."""
+    seen, kept = set(), []
+    for i in ids:
+        if models[i]["family"] not in seen:
+            seen.add(models[i]["family"])
+            kept.append(i)
+    return kept[:limit]
 
 
 def rank(models: dict[str, dict], limit: int) -> dict[str, list[str]]:
@@ -69,17 +102,19 @@ def rank(models: dict[str, dict], limit: int) -> dict[str, list[str]]:
     priced = [i for i, m in strong.items() if m["price"]]  # free/unknown price has no meaningful ratio
     timed = [i for i, m in strong.items() if m["tps"]]
     return {
-        "top": sorted(models, key=lambda i: models[i]["coding"], reverse=True)[:limit],
-        "value": sorted(priced, key=lambda i: value(models[i]), reverse=True)[:limit],
-        "fast": sorted(timed, key=lambda i: models[i]["tps"], reverse=True)[:limit],
+        "top": _unique(sorted(models, key=lambda i: models[i]["coding"], reverse=True), models, limit),
+        "value": _unique(sorted(priced, key=lambda i: value(models[i]), reverse=True), models, limit),
+        "fast": _unique(sorted(timed, key=lambda i: models[i]["tps"], reverse=True), models, limit),
     }
 
 
-def new_entries(ranks: dict[str, list[str]], previous: dict[str, list[str]]) -> dict[str, set[str]]:
-    """Ids that entered a list since the last snapshot. First run: nothing is new."""
+def new_entries(
+    ranks: dict[str, list[str]], models: dict[str, dict], previous: dict[str, list[str]]
+) -> dict[str, set[str]]:
+    """Ids whose family entered a list since the last snapshot. First run: nothing is new."""
     if not previous:
         return {name: set() for name in LISTS}
-    return {name: set(ranks[name]) - set(previous.get(name, [])) for name in LISTS}
+    return {name: {i for i in ranks[name] if models[i]["family"] not in previous.get(name, [])} for name in LISTS}
 
 
 def _usd(value: float | None) -> str:
@@ -124,7 +159,7 @@ def main() -> int:
         print(f"Artificial Analysis: skipped (no {KEY_ENV})")
         return 0
     try:
-        models = normalize(fetch_models(api_key))
+        everything = normalize(fetch_models(api_key))
     except Exception as exc:  # noqa: BLE001 - report any fetch failure to the caller
         print(f"Artificial Analysis fetch failed: {exc}", file=sys.stderr)
         return 1
@@ -132,15 +167,21 @@ def main() -> int:
     previous = {}
     if args.snapshot.exists():
         previous = json.loads(args.snapshot.read_text()).get("ranks", {})
+    models = frontier(everything)
     ranks = rank(models, args.limit)
 
-    print(f"Artificial Analysis: {len(models)} models with a coding index, previous snapshot: {bool(previous)}")
-    print(render(models, ranks, new_entries(ranks, previous)))
+    print(
+        f"Artificial Analysis: {len(everything)} models with a coding index, {len(models)} closed frontier "
+        f"({', '.join(sorted(FRONTIER_CREATORS))}; open families excluded), one variant per model, "
+        f"previous snapshot: {bool(previous)}"
+    )
+    print(render(models, ranks, new_entries(ranks, models, previous)))
 
     args.snapshot.parent.mkdir(parents=True, exist_ok=True)
     now = datetime.now(timezone.utc).isoformat()
+    families = {name: [models[i]["family"] for i in ids] for name, ids in ranks.items()}
     kept = {i: models[i] for i in sorted({i for ids in ranks.values() for i in ids})}
-    args.snapshot.write_text(json.dumps({"fetched_at": now, "ranks": ranks, "models": kept}, indent=1) + "\n")
+    args.snapshot.write_text(json.dumps({"fetched_at": now, "ranks": families, "models": kept}, indent=1) + "\n")
     return 0
 
 
