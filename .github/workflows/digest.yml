@@ -69,6 +69,17 @@ jobs:
           fi
           cat "$RUNNER_TEMP/openrouter.md"
 
+      - name: Artificial Analysis coding models
+        if: steps.date.outputs.build == 'true'
+        env:
+          ARTIFICIAL_ANALYSIS_API_KEY: ${{ secrets.ARTIFICIAL_ANALYSIS_API_KEY }}
+        run: |
+          if ! python3 scripts/aa_coding.py --snapshot out/data/aa-coding.json --limit 5 \
+              > "$RUNNER_TEMP/aa.md" 2> "$RUNNER_TEMP/aa.err"; then
+            echo "Artificial Analysis fetch failed: $(cat "$RUNNER_TEMP/aa.err")" > "$RUNNER_TEMP/aa.md"
+          fi
+          cat "$RUNNER_TEMP/aa.md"
+
       - name: Write digest with Claude Code
         if: steps.date.outputs.build == 'true'
         env:
@@ -79,7 +90,7 @@ jobs:
           # a token pasted from a wrapped terminal line carries a newline; the CLI rejects it
           export CLAUDE_CODE_OAUTH_TOKEN="${CLAUDE_CODE_OAUTH_TOKEN//[$' \t\r\n']/}"
           sed -e "s|{{TODAY}}|$TODAY|g" -e "s|{{OPENROUTER}}|$RUNNER_TEMP/openrouter.md|g" \
-            prompt/digest.md > "$RUNNER_TEMP/prompt.md"
+            -e "s|{{AA_CODING}}|$RUNNER_TEMP/aa.md|g" prompt/digest.md > "$RUNNER_TEMP/prompt.md"
           claude -p "$(cat "$RUNNER_TEMP/prompt.md")" \
             --allowedTools "Read,Write,Edit,Glob,Grep,WebFetch,WebSearch" \
             --output-format text
@@ -94,6 +105,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "digests/$TODAY.md" data/openrouter-models.json
+          # absent when the Artificial Analysis step was skipped or failed
+          if [ -f data/aa-coding.json ]; then git add data/aa-coding.json; fi
           git commit -m "digest: $TODAY"
           git push origin HEAD:digests
 
