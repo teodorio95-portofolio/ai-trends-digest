@@ -50,7 +50,8 @@ Set each with `gh secret set <NAME> -R teodorio95-portofolio/ai-trends-digest`
   new/free models, ending free offers and retired models.
 - `scripts/aa_coding.py` — stdlib-only; ranks closed frontier models
   (Anthropic, OpenAI, Google, xAI, Meta; open families like gpt-oss, Gemma,
-  Llama dropped), one effort variant per model, from the Artificial Analysis
+  Llama dropped), newest version per model line (a newer version without a
+  coding index yet is listed, not ranked), one effort variant per model, from the Artificial Analysis
   API by coding index, coding index per blended $, and output speed
   (the last two only among models within 80% of the best index); snapshot in
   `data/aa-coding.json` marks new entries.
