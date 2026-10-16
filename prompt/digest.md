@@ -10,7 +10,8 @@ You run inside GitHub Actions with full network access. Your ONLY output is one 
    b. New releases/launches: 4-5 WebSearch queries for the last 2 days, e.g. "new open source AI agent framework", "Claude Code skills plugin", "new MCP server release", "agent harness SDK", "coding agent launch". Keep only items where a date within the last 3 days is visible.
    c. Medium RSS via WebFetch (items from the last 36h): https://medium.com/feed/tag/ai-agents , /feed/tag/agentic-ai , /feed/tag/claude , /feed/tag/claude-code , /feed/tag/mcp , /feed/tag/llm . Medium is paywalled: summarise only from the snippet you actually received.
    d. OpenRouter prices: already computed by a deterministic script. Read `{{OPENROUTER}}` and use only what it says. "Models retired" are NOT discounts.
-   e. If a source fails, record the host + error for the Sources section and continue.
+   e. Coding models (Artificial Analysis): already computed by a deterministic script. Read `{{AA_CODING}}` and use only what it says. The coding index is per model and prices are per 1M tokens: never call them "per task".
+   f. If a source fails, record the host + error for the Sources section and continue.
 3. Filter and rank by relevance to the focus above. Drop crypto/trading bots, generic listicles ("10 ChatGPT prompts"), SEO fluff, and duplicates across sources.
 4. Write `out/digests/{{TODAY}}.md` in ROMANIAN (repo names, article titles and technical terms stay in English). Exact structure:
 
@@ -33,6 +34,13 @@ You run inside GitHub Actions with full network access. Your ONLY output is one 
 (max 8, from step 2d only) - [<model name>](https://openrouter.ai/<model id>) — <-X% reducere | pret nou vs vechi | GRATUIT> — in/out $ per 1M tokens — <expira <date> if known>
 Priority: price drops and discounts on strong text/coding models (Anthropic, OpenAI, Google, DeepSeek, Qwen, Mistral, Meta, xAI, Z.ai, Moonshot, Kimi), then new free models useful for coding/agents. Skip image/audio/TTS-only models. Retired models go in one separate bullet, never as a discount.
 Last line: [Toate reducerile pe OpenRouter](https://openrouter.ai/models?order=discount-high-to-low)
+
+## Top modele coding (Artificial Analysis)
+(from step 2e only) Three groups, in this order, each a bold line followed by bullets:
+**Cel mai bun coding index** (top 3), **Cel mai bun raport index/pret** (top 3), **Cele mai rapide dintre cele puternice** (top 2).
+- [<model name>](<url from the script>) — <creator> — Coding Index <X> — $<blended>/1M (in/out $) — <tok/s> tok/s <— nou in top, only if marked NEW>
+A model may appear in several groups. If the script says skipped or failed, write one line saying so and mention it under Surse.
+Last line: Date: [Artificial Analysis](https://artificialanalysis.ai/) · [Coding Agent Index (cost per task)](https://artificialanalysis.ai/agents/coding-agents#coding-agents-index)
 
 ## Alte lansari
 (max 4, from the WebSearch step, with source link and date)
