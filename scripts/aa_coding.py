@@ -27,6 +27,8 @@ LISTS = ("top", "value", "fast")
 FRONTIER_CREATORS = {"anthropic", "openai", "google", "xai", "meta"}
 OPEN_FAMILIES = ("gpt-oss", "gemma", "llama")
 EFFORT_SUFFIX = re.compile(r"(\s*\([^)]*\))+\s*$")  # "Claude Fable 5.1 (Max, Default Fallback)"
+VERSION = re.compile(r"\d+(?:\.\d+)*")
+PREVIEW = re.compile(r"\bpreview\b", re.IGNORECASE)
 
 
 def fetch_models(api_key: str) -> list[dict]:
@@ -44,12 +46,10 @@ def _number(value: object) -> float | None:
 
 
 def normalize(models: list[dict]) -> dict[str, dict]:
-    """Keep only models with a coding index; missing prices or speeds become None."""
+    """Missing coding index, prices or speeds become None."""
     snapshot = {}
     for model in models:
         coding = _number((model.get("evaluations") or {}).get("artificial_analysis_coding_index"))
-        if coding is None:
-            continue
         pricing = model.get("pricing") or {}
         name = model.get("name", model["id"])
         snapshot[model["id"]] = {
@@ -69,6 +69,38 @@ def normalize(models: list[dict]) -> dict[str, dict]:
 def family(name: str) -> str:
     """Model name without the effort/variant suffix, so each model shows up once per list."""
     return EFFORT_SUFFIX.sub("", name).strip() or name
+
+
+def line(name: str) -> str:
+    """Model line without version numbers: 'Gemini 3.8 Flash' and 'Gemini 3.7 Flash' -> 'gemini flash'."""
+    bare = VERSION.sub(" ", PREVIEW.sub(" ", family(name).lower()))
+    return " ".join(part for part in re.split(r"[\s\-_.]+", bare) if part)
+
+
+def version(name: str) -> tuple[int, ...]:
+    return tuple(int(n) for n in re.findall(r"\d+", family(name)))
+
+
+def latest(models: dict[str, dict]) -> dict[str, dict]:
+    """Drop models whose line has a newer version (all effort variants of the newest stay)."""
+    newest: dict[str, tuple[int, ...]] = {}
+    for m in models.values():
+        newest[line(m["name"])] = max(newest.get(line(m["name"]), ()), version(m["name"]))
+    return {i: m for i, m in models.items() if version(m["name"]) == newest[line(m["name"])]}
+
+
+def unscored_newer(models: dict[str, dict], ranked: dict[str, dict]) -> list[str]:
+    """Families newer than every scored version of their line but without a coding index yet."""
+    best: dict[str, tuple[int, ...]] = {}
+    for m in ranked.values():
+        best[line(m["name"])] = max(best.get(line(m["name"]), ()), version(m["name"]))
+    return sorted(
+        {
+            m["family"]
+            for m in models.values()
+            if m["coding"] is None and line(m["name"]) in best and version(m["name"]) > best[line(m["name"])]
+        }
+    )
 
 
 def is_frontier(entry: dict) -> bool:
@@ -131,7 +163,9 @@ def _line(model_id: str, m: dict, extra: str, new: bool) -> str:
     return line + ("; NEW in this list" if new else "")
 
 
-def render(models: dict[str, dict], ranks: dict[str, list[str]], new: dict[str, set[str]]) -> str:
+def render(
+    models: dict[str, dict], ranks: dict[str, list[str]], new: dict[str, set[str]], pending: list[str] | None = None
+) -> str:
     titles = {
         "top": "### Highest coding index",
         "value": f"### Best coding index per $ (blended 1M tokens, models >= {STRONG_RATIO:.0%} of the best)",
@@ -145,7 +179,12 @@ def render(models: dict[str, dict], ranks: dict[str, list[str]], new: dict[str, 
         for i in ranks[name]:
             extra = f" ({value(models[i]):.1f} points per $)" if name == "value" else ""
             lines.append(_line(i, models[i], extra, i in new[name]))
-    return "\n".join(lines) if lines else "No models with a coding index."
+    if not lines:
+        lines.append("No models with a coding index.")
+    if pending:
+        lines.append("### Newer versions without a coding index yet (not ranked, older version shown above)")
+        lines.extend(f"- {name}" for name in pending)
+    return "\n".join(lines)
 
 
 def main() -> int:
@@ -167,15 +206,17 @@ def main() -> int:
     previous = {}
     if args.snapshot.exists():
         previous = json.loads(args.snapshot.read_text()).get("ranks", {})
-    models = frontier(everything)
+    closed = frontier(everything)
+    models = latest({i: m for i, m in closed.items() if m["coding"] is not None})
     ranks = rank(models, args.limit)
 
+    scored = sum(1 for m in everything.values() if m["coding"] is not None)
     print(
-        f"Artificial Analysis: {len(everything)} models with a coding index, {len(models)} closed frontier "
-        f"({', '.join(sorted(FRONTIER_CREATORS))}; open families excluded), one variant per model, "
-        f"previous snapshot: {bool(previous)}"
+        f"Artificial Analysis: {scored} models with a coding index, {len(models)} closed frontier "
+        f"({', '.join(sorted(FRONTIER_CREATORS))}; open families excluded), newest version per model line, "
+        f"one variant per model, previous snapshot: {bool(previous)}"
     )
-    print(render(models, ranks, new_entries(ranks, models, previous)))
+    print(render(models, ranks, new_entries(ranks, models, previous), unscored_newer(closed, models)))
 
     args.snapshot.parent.mkdir(parents=True, exist_ok=True)
     now = datetime.now(timezone.utc).isoformat()

@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
-from aa_coding import family, frontier, new_entries, normalize, rank, render  # noqa: E402
+from aa_coding import family, frontier, latest, line, new_entries, normalize, rank, render, unscored_newer  # noqa: E402
 
 
 def model(model_id, coding=50, price=1.0, tps=100, slug=None, name=None, creator="Acme"):
@@ -18,13 +18,49 @@ def model(model_id, coding=50, price=1.0, tps=100, slug=None, name=None, creator
     }
 
 
-def test_normalize_drops_models_without_coding_index_and_keeps_missing_price():
+def test_normalize_keeps_missing_coding_index_price_and_speed_as_none():
     raw = [model("a"), model("b", price=None, tps=0)]
     raw.append({**model("c"), "evaluations": {}})
     models = normalize(raw)
-    assert sorted(models) == ["a", "b"]
+    assert sorted(models) == ["a", "b", "c"]
     assert models["b"]["price"] is None
     assert models["b"]["tps"] is None
+    assert models["c"]["coding"] is None
+
+
+def test_line_ignores_version_numbers_effort_and_preview():
+    assert line("Gemini 3.8 Flash (High)") == line("Gemini 3.7 Flash") == "gemini flash"
+    assert line("Gemini 3.1 Pro Preview") == line("Gemini 3 Pro") == "gemini pro"
+    assert line("Claude Opus 5 (Max)") == line("Claude Opus 5.5") == "claude opus"
+    assert line("GPT-5.6 Sol (Xhigh)") != line("GPT-6 Astra (High)")
+    assert line("Gemini 3.8 Flash") != line("Gemini 3.8 Flash-Lite")
+
+
+def test_latest_keeps_only_newest_version_with_all_its_effort_variants():
+    models = normalize(
+        [
+            model("f38h", name="Gemini 3.8 Flash (High)"),
+            model("f38m", name="Gemini 3.8 Flash (Medium)"),
+            model("f37", name="Gemini 3.7 Flash (High)"),
+            model("o5", name="Claude Opus 5 (Max)"),
+            model("o48", name="Claude Opus 4.8"),
+            model("sol", name="GPT-5.6 Sol"),
+        ]
+    )
+    assert sorted(latest(models)) == ["f38h", "f38m", "o5", "sol"]
+
+
+def test_unscored_newer_version_is_reported_and_older_one_stays_ranked():
+    raw = [model("o5", name="Claude Opus 5 (Max)", coding=78), model("o55", name="Claude Opus 5.5 (Max)")]
+    raw[1]["evaluations"] = {}
+    raw.append({**model("new-line", name="Brand New 1"), "evaluations": {}})
+    models = normalize(raw)
+    ranked = latest({i: m for i, m in models.items() if m["coding"] is not None})
+    assert sorted(ranked) == ["o5"]
+    assert unscored_newer(models, ranked) == ["Claude Opus 5.5"]
+    out = render(ranked, rank(ranked, 5), {"top": set(), "value": set(), "fast": set()}, ["Claude Opus 5.5"])
+    assert "### Newer versions without a coding index yet" in out
+    assert out.endswith("\n- Claude Opus 5.5")
 
 
 def test_value_list_ignores_weak_cheap_and_unpriced_models():
