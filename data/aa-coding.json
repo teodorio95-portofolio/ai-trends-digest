@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-10-16T12:46:05.910325+00:00",
+ "fetched_at": "2026-10-16T12:56:04.973878+00:00",
  "ranks": {
   "top": [
    "Claude Fable 5.1",
@@ -11,9 +11,9 @@
   "value": [
    "GPT-5.6 Luna",
    "Gemini 3.8 Flash",
-   "Gemini 3.7 Flash",
-   "Gemini 3.6 Flash",
-   "Muse Spark 1.3"
+   "Muse Spark 1.3",
+   "Claude Sonnet 5",
+   "GPT-5.6 Terra"
   ],
   "fast": [
    "Muse Spark 1.3",
@@ -24,6 +24,17 @@
   ]
  },
  "models": {
+  "23c86e4a-c769-43c0-a056-79e3cd15834f": {
+   "name": "Claude Sonnet 5 (Max)",
+   "family": "Claude Sonnet 5",
+   "creator": "Anthropic",
+   "slug": "claude-sonnet-5",
+   "coding": 71.5,
+   "price": 4.0,
+   "in": 2.0,
+   "out": 10.0,
+   "tps": null
+  },
   "3e87c73e-a257-495e-9730-367a66229811": {
    "name": "Claude Fable 5.1 (Max, Default Fallback)",
    "family": "Claude Fable 5.1",
@@ -46,17 +57,6 @@
    "out": 1.2,
    "tps": null
   },
-  "78332c88-fe60-42c8-af9d-3617e44cf1f5": {
-   "name": "Gemini 3.6 Flash (High)",
-   "family": "Gemini 3.6 Flash",
-   "creator": "Google",
-   "slug": "gemini-3-6-flash",
-   "coding": 69.2,
-   "price": 1.5,
-   "in": 0.75,
-   "out": 3.75,
-   "tps": null
-  },
   "8a999846-4c1d-4ce7-a8b7-1310a7166fd7": {
    "name": "Gemini 3.8 Flash (High)",
    "family": "Gemini 3.8 Flash",
@@ -67,17 +67,6 @@
    "in": 0.75,
    "out": 3.75,
    "tps": 137.797
-  },
-  "b2331108-72ed-415a-82d1-188633875bbc": {
-   "name": "Gemini 3.7 Flash (High)",
-   "family": "Gemini 3.7 Flash",
-   "creator": "Google",
-   "slug": "gemini-3-7-flash",
-   "coding": 76.1,
-   "price": 1.5,
-   "in": 0.75,
-   "out": 3.75,
-   "tps": null
   },
   "b8fc61f7-5e9a-49e6-8547-6ac56db24627": {
    "name": "Claude Opus 5 (Max)",

@@ -1,4 +1,4 @@
-{"fetched_at": "2026-10-16T12:46:05.215151+00:00", "models": {
+{"fetched_at": "2026-10-16T12:56:04.665711+00:00", "models": {
 "aion-labs/aion-2.0": {"name": "AionLabs: Aion-2.0", "in": 0.8, "out": 1.6, "discount": 0.0, "created": 1771881306, "expires": null},
 "aion-labs/aion-3.0": {"name": "AionLabs: Aion-3.0", "in": 3.0, "out": 6.0, "discount": 0.0, "created": 1783443095, "expires": null},
 "aion-labs/aion-3.0-mini": {"name": "AionLabs: Aion-3.0-Mini", "in": 0.7, "out": 1.4, "discount": 0.0, "created": 1783443096, "expires": null},
@@ -65,7 +65,7 @@
 "deepseek/deepseek-v3.2": {"name": "DeepSeek: DeepSeek V3.2", "in": 0.259, "out": 0.8, "discount": 0.28, "created": 1764594642, "expires": null},
 "deepseek/deepseek-v3.2-exp": {"name": "DeepSeek: DeepSeek V3.2 Exp", "in": 0.27, "out": 0.41, "discount": 0.0, "created": 1759150481, "expires": null},
 "deepseek/deepseek-v4-flash": {"name": "DeepSeek: DeepSeek V4 Flash 0423", "in": 0.091, "out": 0.182, "discount": 0.41, "created": 1777000666, "expires": null},
-"deepseek/deepseek-v4-flash-0731": {"name": "DeepSeek: DeepSeek V4 Flash 0731", "in": 0.018, "out": 1.28, "discount": 0.7, "created": 1785478908, "expires": null},
+"deepseek/deepseek-v4-flash-0731": {"name": "DeepSeek: DeepSeek V4 Flash 0731", "in": 0.0154, "out": 1.28, "discount": 0.7, "created": 1785478908, "expires": null},
 "deepseek/deepseek-v4-flash-vision-exp": {"name": "DeepSeek: DeepSeek V4 Flash Vision Exp", "in": 0.2156, "out": 0.6468, "discount": 0.51, "created": 1787311563, "expires": null},
 "deepseek/deepseek-v4-pro": {"name": "DeepSeek: DeepSeek V4 Pro 0423", "in": 0.447876, "out": 0.895752, "discount": 0.7426, "created": 1777000679, "expires": null},
 "deepseek/deepseek-v4-pro-0813": {"name": "DeepSeek: DeepSeek V4 Pro 0813", "in": 0.66, "out": 1.98, "discount": 0.811, "created": 1786549364, "expires": null},
@@ -439,7 +439,7 @@
 "z-ai/glm-5.1": {"name": "Z.ai: GLM 5.1", "in": 0.966, "out": 3.036, "discount": 0.311, "created": 1775578025, "expires": null},
 "z-ai/glm-5.2": {"name": "Z.ai: GLM 5.2", "in": 0.037, "out": 9.0, "discount": 0.5621, "created": 1781631930, "expires": null},
 "z-ai/glm-5.3": {"name": "Z.ai: GLM 5.3", "in": 0.079, "out": 4.8, "discount": 0.501, "created": 1787086655, "expires": null},
-"z-ai/glm-5.3-flash": {"name": "Z.ai: GLM 5.3 Flash", "in": 0.01836, "out": 0.9, "discount": 0.71, "created": 1787752741, "expires": null},
+"z-ai/glm-5.3-flash": {"name": "Z.ai: GLM 5.3 Flash", "in": 0.0204, "out": 0.7352, "discount": 0.71, "created": 1787752741, "expires": null},
 "z-ai/glm-5.3-flash:batch": {"name": "Z.ai: GLM 5.3 Flash (batch)", "in": 0.05, "out": 0.18, "discount": 0.5, "created": 1787752741, "expires": null},
 "z-ai/glm-5.3-flashx": {"name": "Z.ai: GLM 5.3 FlashX", "in": 0.37, "out": 1.25, "discount": 0.0, "created": 1789744020, "expires": null},
 "z-ai/glm-5.3-prime": {"name": "Z.ai: GLM 5.3 Prime", "in": 2.8, "out": 8.8, "discount": 0.0, "created": 1790199651, "expires": null},
@@ -451,7 +451,7 @@
 "~anthropic/claude-sonnet-latest": {"name": "Anthropic: Claude Sonnet Latest", "in": 2.0, "out": 10.0, "discount": 0.0, "created": 1777318368, "expires": null},
 "~deepseek/deepseek-flash-latest": {"name": "DeepSeek: DeepSeek Flash Latest", "in": 0.036, "out": 0.684, "discount": 0.0, "created": 1789399150, "expires": null},
 "~deepseek/deepseek-pro-latest": {"name": "DeepSeek: DeepSeek Pro Latest", "in": 0.24948, "out": 0.74844, "discount": 0.0, "created": 1789399174, "expires": null},
-"~deepseek/deepseek-v4-flash-latest": {"name": "DeepSeek: DeepSeek V4 Flash Latest", "in": 0.0162, "out": 1.152, "discount": 0.0, "created": 1785606009, "expires": null},
+"~deepseek/deepseek-v4-flash-latest": {"name": "DeepSeek: DeepSeek V4 Flash Latest", "in": 0.0154, "out": 1.28, "discount": 0.0, "created": 1785606009, "expires": null},
 "~google/gemini-flash-latest": {"name": "Google: Gemini Flash Latest", "in": 0.75, "out": 3.75, "discount": 0.0, "created": 1777318398, "expires": null},
 "~google/gemini-pro-latest": {"name": "Google: Gemini Pro Latest", "in": 2.0, "out": 10.0, "discount": 0.0, "created": 1777318451, "expires": null},
 "~moonshotai/kimi-latest": {"name": "MoonshotAI: Kimi Latest", "in": 0.294, "out": 28.0, "discount": 0.0, "created": 1777318428, "expires": null},
@@ -462,6 +462,6 @@
 "~openai/gpt-terra-latest": {"name": "OpenAI: GPT Terra Latest", "in": 2.0, "out": 12.0, "discount": 0.0, "created": 1789130925, "expires": null},
 "~unbiased/pareto-latest": {"name": "Pareto Latest", "in": 2.5, "out": 7.5, "discount": 0.0, "created": 1791933050, "expires": null},
 "~x-ai/grok-latest": {"name": "xAI: Grok Latest", "in": 2.0, "out": 6.0, "discount": 0.0, "created": 1783519360, "expires": null},
-"~z-ai/glm-flash-latest": {"name": "Z.ai: GLM Flash Latest", "in": 0.01836, "out": 0.9, "discount": 0.0, "created": 1787817633, "expires": null},
+"~z-ai/glm-flash-latest": {"name": "Z.ai: GLM Flash Latest", "in": 0.0204, "out": 0.7352, "discount": 0.0, "created": 1787817633, "expires": null},
 "~z-ai/glm-latest": {"name": "Z.ai: GLM Latest", "in": 0.0608, "out": 4.4, "discount": 0.0, "created": 1787151053, "expires": null}
 }}
