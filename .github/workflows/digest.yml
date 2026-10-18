@@ -134,17 +134,3 @@ jobs:
           html_body: file://${{ runner.temp }}/email.html
           body: file://${{ runner.temp }}/email.txt
 
-      # ntfy.sh rate-limits per sending IP; a 429 must not fail the run.
-      - name: Phone push (ntfy)
-        if: steps.date.outputs.build == 'true'
-        continue-on-error: true
-        env:
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
-          TODAY: ${{ steps.date.outputs.today }}
-          LINK: ${{ steps.date.outputs.link }}
-        run: |
-          python3 scripts/ntfy_payload.py "out/digests/$TODAY.md" > "$RUNNER_TEMP/ntfy.json"
-          code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' \
-            --data-binary @"$RUNNER_TEMP/ntfy.json" https://ntfy.sh/)
-          echo "ntfy HTTP $code"
-          [ "$code" = "200" ]
