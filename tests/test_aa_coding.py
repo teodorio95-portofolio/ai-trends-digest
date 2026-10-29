@@ -105,6 +105,13 @@ def test_new_entries_compare_families_against_previous_snapshot_only():
     assert new_entries(ranks, models, previous) == {"top": {"b"}, "value": set(), "fast": set()}
 
 
+def test_snapshot_with_only_empty_lists_is_not_a_baseline():
+    models = normalize([model("a", name="Fable 5.1 (High)"), model("b", name="Luna")])
+    ranks = {"top": ["a", "b"], "value": ["b"], "fast": []}
+    empty = {"top": [], "value": [], "fast": []}
+    assert new_entries(ranks, models, empty) == {"top": set(), "value": set(), "fast": set()}
+
+
 def test_family_strips_effort_suffix():
     assert family("Claude Fable 5.1 (Max, Default Fallback)") == "Claude Fable 5.1"
     assert family("GPT-5.6 Luna (Xhigh)") == "GPT-5.6 Luna"

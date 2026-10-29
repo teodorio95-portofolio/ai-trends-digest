@@ -144,7 +144,9 @@ def new_entries(
     ranks: dict[str, list[str]], models: dict[str, dict], previous: dict[str, list[str]]
 ) -> dict[str, set[str]]:
     """Ids whose family entered a list since the last snapshot. First run: nothing is new."""
-    if not previous:
+    # A snapshot whose lists are all empty carries no baseline either (a run that ranked
+    # nothing wrote it); treat it like a first run instead of calling every entry new.
+    if not any(previous.get(name) for name in LISTS):
         return {name: set() for name in LISTS}
     return {name: {i for i in ranks[name] if models[i]["family"] not in previous.get(name, [])} for name in LISTS}
 
@@ -217,6 +219,12 @@ def main() -> int:
         f"one variant per model, previous snapshot: {bool(previous)}"
     )
     print(render(models, ranks, new_entries(ranks, models, previous), unscored_newer(closed, models)))
+
+    if not models:
+        # The source answered but ranked nothing: keep the previous snapshot so the next run
+        # still has a baseline and does not mark every entry as new.
+        print("Artificial Analysis: nothing ranked, previous snapshot kept", file=sys.stderr)
+        return 0
 
     args.snapshot.parent.mkdir(parents=True, exist_ok=True)
     now = datetime.now(timezone.utc).isoformat()
