@@ -1,12 +1,12 @@
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from openrouter_prices import diff, needs_endpoint_lookup, normalize, per_million, render  # noqa: E402
 
-NOW = datetime(2026, 9, 25, 5, 0, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 25, 5, 0, tzinfo=UTC)
 
 
 def model(model_id, prompt="0.000001", completion="0.000002", discount=0, created=0, expires=None):

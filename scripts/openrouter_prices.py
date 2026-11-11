@@ -13,7 +13,7 @@ import os
 import sys
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 API_URL = "https://openrouter.ai/api/v1/models"
@@ -97,7 +97,7 @@ def _parse_date(value: str | None) -> datetime | None:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError:
         return None
-    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)
 
 
 def diff(previous: dict[str, dict], current: dict[str, dict], now: datetime) -> dict[str, list]:
@@ -199,7 +199,7 @@ def main() -> int:
     previous = {}
     if args.snapshot.exists():
         previous = json.loads(args.snapshot.read_text())["models"]
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     current = normalize(models, discounts)
 
     print(
