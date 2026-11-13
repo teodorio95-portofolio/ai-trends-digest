@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-12T05:00:41.630204+00:00",
+ "fetched_at": "2026-11-13T05:00:44.469170+00:00",
  "index_version": 5,
  "ranks": {
   "top": [
@@ -10,32 +10,21 @@
    "GPT-6.1 Sol"
   ],
   "value": [
+   "Gemini 4 Hydrogen",
+   "Gemini 4 Carbon",
    "GPT-6.1 Sol",
    "Claude Sonnet 5.5",
-   "Gemini 4 Carbon",
-   "Claude Opus 5.5",
-   "Claude Fable 5.2"
+   "Claude Opus 5.5"
   ],
   "fast": [
+   "Gemini 4 Hydrogen",
    "Claude Sonnet 5.5",
    "Claude Opus 5.5",
    "Claude Fable 5.2",
-   "Gemini 4 Carbon",
-   "GPT-6.1 Sol"
+   "Gemini 4 Carbon"
   ]
  },
  "models": {
-  "092a3b0e-c5c8-45dc-bf1b-53673c8ff352": {
-   "name": "GPT-6.1 Sol (Xhigh)",
-   "family": "GPT-6.1 Sol",
-   "creator": "OpenAI",
-   "slug": "gpt-6-1-sol-xhigh",
-   "index": 52.5,
-   "price": 4.0,
-   "in": 2.0,
-   "out": 10.0,
-   "tps": 52.3
-  },
   "2f339a97-9a0d-499a-9cb5-e0db665bfa25": {
    "name": "GPT-6 Astra (Max)",
    "family": "GPT-6 Astra",
@@ -45,7 +34,7 @@
    "price": 20.0,
    "in": 10.0,
    "out": 50.0,
-   "tps": 35.63
+   "tps": 35.77
   },
   "2f3c4dc9-a450-4303-8697-0237257cf08f": {
    "name": "Claude Opus 5.5 (Max, Default Fallback)",
@@ -56,7 +45,7 @@
    "price": 8.0,
    "in": 4.0,
    "out": 20.0,
-   "tps": 115.52
+   "tps": 114.83
   },
   "593f2d23-247b-41c9-a679-cebd225f0a9a": {
    "name": "Claude Fable 5.2 (Max, Default Fallback)",
@@ -67,7 +56,7 @@
    "price": 16.0,
    "in": 8.0,
    "out": 40.0,
-   "tps": 95.41
+   "tps": 97.48
   },
   "76942526-cc96-46b0-bc27-29561c53ed70": {
    "name": "Claude Fable 5.2 (Xhigh, Default Fallback)",
@@ -78,7 +67,7 @@
    "price": 16.0,
    "in": 8.0,
    "out": 40.0,
-   "tps": 102.38
+   "tps": 102.84
   },
   "909ed0ba-bcc5-4f38-8162-08a4e187a772": {
    "name": "Gemini 4 Carbon (High)",
@@ -86,10 +75,10 @@
    "creator": "Google",
    "slug": "gemini-4-carbon",
    "index": 60.0,
-   "price": 8.0,
-   "in": 4.0,
-   "out": 20.0,
-   "tps": 80.38
+   "price": 4.0,
+   "in": 2.0,
+   "out": 10.0,
+   "tps": 72.14
   },
   "b171d979-5ec1-45de-b8b9-db1ee65e77ec": {
    "name": "Claude Sonnet 5.5 (Max, Default Fallback)",
@@ -100,7 +89,7 @@
    "price": 4.0,
    "in": 2.0,
    "out": 10.0,
-   "tps": 145.96
+   "tps": 139.36
   },
   "b25ac058-1e33-4c31-bbc9-a20c3ad0717a": {
    "name": "GPT-6.1 Sol (Max)",
@@ -111,7 +100,18 @@
    "price": 4.0,
    "in": 2.0,
    "out": 10.0,
-   "tps": 52.11
+   "tps": 48.59
+  },
+  "dad0e3b1-e3e7-477a-99f9-c14457a91114": {
+   "name": "Gemini 4 Hydrogen (Xhigh)",
+   "family": "Gemini 4 Hydrogen",
+   "creator": "Google",
+   "slug": "gemini-4-hydrogen",
+   "index": 53.9,
+   "price": 3.0,
+   "in": 1.5,
+   "out": 7.5,
+   "tps": 188.5
   }
  }
 }
