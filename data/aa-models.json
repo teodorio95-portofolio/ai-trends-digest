@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-13T05:00:44.469170+00:00",
+ "fetched_at": "2026-11-14T05:00:44.459382+00:00",
  "index_version": 5,
  "ranks": {
   "top": [
@@ -34,7 +34,7 @@
    "price": 20.0,
    "in": 10.0,
    "out": 50.0,
-   "tps": 35.77
+   "tps": 35.89
   },
   "2f3c4dc9-a450-4303-8697-0237257cf08f": {
    "name": "Claude Opus 5.5 (Max, Default Fallback)",
@@ -45,7 +45,7 @@
    "price": 8.0,
    "in": 4.0,
    "out": 20.0,
-   "tps": 114.83
+   "tps": 113.78
   },
   "593f2d23-247b-41c9-a679-cebd225f0a9a": {
    "name": "Claude Fable 5.2 (Max, Default Fallback)",
@@ -56,18 +56,7 @@
    "price": 16.0,
    "in": 8.0,
    "out": 40.0,
-   "tps": 97.48
-  },
-  "76942526-cc96-46b0-bc27-29561c53ed70": {
-   "name": "Claude Fable 5.2 (Xhigh, Default Fallback)",
-   "family": "Claude Fable 5.2",
-   "creator": "Anthropic",
-   "slug": "claude-fable-5-2-xhigh",
-   "index": 62.2,
-   "price": 16.0,
-   "in": 8.0,
-   "out": 40.0,
-   "tps": 102.84
+   "tps": 100.62
   },
   "909ed0ba-bcc5-4f38-8162-08a4e187a772": {
    "name": "Gemini 4 Carbon (High)",
@@ -78,7 +67,7 @@
    "price": 4.0,
    "in": 2.0,
    "out": 10.0,
-   "tps": 72.14
+   "tps": 66.18
   },
   "b171d979-5ec1-45de-b8b9-db1ee65e77ec": {
    "name": "Claude Sonnet 5.5 (Max, Default Fallback)",
@@ -89,7 +78,7 @@
    "price": 4.0,
    "in": 2.0,
    "out": 10.0,
-   "tps": 139.36
+   "tps": 140.55
   },
   "b25ac058-1e33-4c31-bbc9-a20c3ad0717a": {
    "name": "GPT-6.1 Sol (Max)",
@@ -100,7 +89,18 @@
    "price": 4.0,
    "in": 2.0,
    "out": 10.0,
-   "tps": 48.59
+   "tps": 48.58
+  },
+  "cfc7acb1-d903-4858-9b6c-6c7776caf8f9": {
+   "name": "Claude Fable 5.2 (Low, Default Fallback)",
+   "family": "Claude Fable 5.2",
+   "creator": "Anthropic",
+   "slug": "claude-fable-5-2-low",
+   "index": 53.9,
+   "price": 16.0,
+   "in": 8.0,
+   "out": 40.0,
+   "tps": 102.41
   },
   "dad0e3b1-e3e7-477a-99f9-c14457a91114": {
    "name": "Gemini 4 Hydrogen (Xhigh)",
@@ -111,7 +111,7 @@
    "price": 3.0,
    "in": 1.5,
    "out": 7.5,
-   "tps": 188.5
+   "tps": 177.85
   }
  }
 }
