@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-23T05:00:41.310648+00:00",
+ "fetched_at": "2026-11-24T05:00:44.840026+00:00",
  "index_version": 5,
  "ranks": {
   "top": [
@@ -34,7 +34,7 @@
    "price": 8.0,
    "in": 4.0,
    "out": 20.0,
-   "tps": 114.52
+   "tps": 116.43
   },
   "593f2d23-247b-41c9-a679-cebd225f0a9a": {
    "name": "Claude Fable 5.2 (Max, Default Fallback)",
@@ -45,7 +45,7 @@
    "price": 16.0,
    "in": 8.0,
    "out": 40.0,
-   "tps": 110.17
+   "tps": 111.36
   },
   "75c1b0b8-9db3-4c7e-95be-d74e59defee4": {
    "name": "GPT-6.2 Astra (Max)",
@@ -56,18 +56,7 @@
    "price": 16.0,
    "in": 8.0,
    "out": 40.0,
-   "tps": 48.35
-  },
-  "76942526-cc96-46b0-bc27-29561c53ed70": {
-   "name": "Claude Fable 5.2 (Xhigh, Default Fallback)",
-   "family": "Claude Fable 5.2",
-   "creator": "Anthropic",
-   "slug": "claude-fable-5-2-xhigh",
-   "index": 62.2,
-   "price": 16.0,
-   "in": 8.0,
-   "out": 40.0,
-   "tps": 110.95
+   "tps": 48.97
   },
   "7c667f2d-0149-4eb1-864c-7e66c166ad88": {
    "name": "Gemini 4 Neon (Xhigh)",
@@ -78,7 +67,7 @@
    "price": 6.0,
    "in": 3.0,
    "out": 15.0,
-   "tps": 99.06
+   "tps": 90.37
   },
   "909ed0ba-bcc5-4f38-8162-08a4e187a772": {
    "name": "Gemini 4 Carbon (High)",
@@ -89,7 +78,7 @@
    "price": 8.0,
    "in": 4.0,
    "out": 20.0,
-   "tps": 63.16
+   "tps": 60.41
   },
   "9b696f5b-b5d2-4b1f-9ed5-7c1446ec8421": {
    "name": "Gemini 4 Neon (High)",
@@ -100,7 +89,7 @@
    "price": 6.0,
    "in": 3.0,
    "out": 15.0,
-   "tps": 99.56
+   "tps": 98.39
   },
   "a1a84b18-e8c9-48fb-8e04-6003bd9f6ff4": {
    "name": "GPT-6.2 Sol (Max)",
@@ -111,7 +100,7 @@
    "price": 4.0,
    "in": 2.0,
    "out": 10.0,
-   "tps": 67.23
+   "tps": 66.7
   },
   "b171d979-5ec1-45de-b8b9-db1ee65e77ec": {
    "name": "Claude Sonnet 5.5 (Max, Default Fallback)",
@@ -122,7 +111,7 @@
    "price": 4.0,
    "in": 2.0,
    "out": 10.0,
-   "tps": 151.52
+   "tps": 152.82
   },
   "dad0e3b1-e3e7-477a-99f9-c14457a91114": {
    "name": "Gemini 4 Hydrogen (Xhigh)",
@@ -133,7 +122,7 @@
    "price": 3.0,
    "in": 1.5,
    "out": 7.5,
-   "tps": 157.23
+   "tps": 158.29
   }
  }
 }
